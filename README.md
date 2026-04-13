@@ -20,8 +20,7 @@
 - [Preflight Check](#preflight-check)
 - [Quick Start](#quick-start)
 - [Configuration Precedence](#configuration-precedence)
-- [Configuration Parameters](#configuration-parameters)
-- [CLI Reference](#cli-reference)
+- [Configuration Parameters and CLI Reference](#configuration-parameters-and-cli-reference)
 - [Output Structure](#output-structure)
 - [Citations & Acknowledgements](#citations--acknowledgements)
 
@@ -134,58 +133,45 @@ QMSEP resolves configuration parameters using the following priority hierarchy (
 4. `--config` file passed at runtime
 5. **CLI explicit arguments** (Highest)
 
-## Configuration Parameters
+## Configuration Parameters and CLI Reference
 
-The complete list of supported parameters for configuration files:
+The following table provides a comprehensive reference for all supported configuration parameters. These settings can be defined in a configuration file or overridden at runtime using the corresponding CLI arguments with `pipeline_orchestrator.py`.
 
-| Parameter | Type | Default | Options / Valid Values | Description |
-| :--- | :---: | :---: | :--- | :--- |
-| `multiwfn_path` | `string` | `$QMSEP_MULTIWFN_PATH` | - | Path to the Multiwfn executable. |
-| `orca_bin_path` | `string` | `orca` | - | Path to the ORCA executable (or `$QMSEP_ORCA_BIN_PATH`). |
-| `max_retries` | `int` | `1` | - | Number of ORCA execution retry attempts. |
-| `retry_delay` | `int` | `5` | - | Sleep time (in seconds) between retry attempts. |
-| `surface_mode` | `string` | `ses` | `vdw`, `ses`, `eps` | Method used for surface generation. |
-| `sample_points` | `int` | `10000` | - | Target number of sampled surface points. |
-| `grid_spacing` | `float` | `0.1` | - | Grid spacing dimension in Angstroms. |
-| `log_level` | `string` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` | System console log output level. |
-| `keep_intermediates`| `bool` | `false` | `true`, `false` | Whether to retain temporary intermediate files after a run. |
-| `output_dir` | `string` | `output` | - | Root directory for output generation. |
-| `temp_dir` | `string` | `temp` | - | Root directory for temporary file storage. |
-| `pdb2pqr_force_field`| `string` | `SWANSON` | `AMBER`, `CHARMM`, `PARSE`, `TYL06`, `PEOEPB`, `SWANSON` | Force field standard used for `pdb2pqr`. |
-| `pqr_radius_scale` | `float` | `1.2` | - | Cavity radius scaling factor used in ORCA input generation. |
-| `orca_functional` | `string` | `B3LYP` | - | Density Functional (DFT) chosen for ORCA. |
-| `orca_basis_set` | `string` | `6-31G*` | - | Basis set chosen for ORCA calculations. |
-| `orca_nprocs` | `int` | `32` | - | Number of processors for ORCA (`%pal nprocs`). |
-| `orca_maxcore` | `int` | `7000` | - | Maximum memory per core for ORCA in MB (`%maxcore`). |
-| `eps_gaussian_exponent`| `float` | `5.0` | - | EPS density exponent (Only effective when `surface_mode=eps`). |
-| `eps_target_iso_level` | `float` | `0.999` | - | EPS target isovalue (Only effective when `surface_mode=eps`). |
+| Parameter (Config) | CLI Argument | Type | Default | Options / Valid Values | Description |
+| :--- | :--- | :---: | :---: | :--- | :--- |
+| `multiwfn_path` | `--multiwfn-path` | `string` | `$QMSEP_MULTIWFN_PATH` | - | Path to the Multiwfn executable. |
+| `orca_bin_path` | `--orca-bin-path` | `string` | `orca` | - | Path to the ORCA executable (or `$QMSEP_ORCA_BIN_PATH`). |
+| `max_retries` | - | `int` | `1` | - | Number of ORCA execution retry attempts. |
+| `retry_delay` | - | `int` | `5` | - | Sleep time (in seconds) between retry attempts. |
+| `surface_mode` | `--surface-mode` | `string` | `ses` | `vdw`, `ses`, `eps` | Method used for surface generation. |
+| `sample_points` | `--sample-points` | `int` | `10000` | - | Target number of sampled surface points. |
+| `grid_spacing` | `--grid-spacing` | `float` | `0.1` | - | Grid spacing dimension in Angstroms. |
+| `log_level` | `--log-level` | `string` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` | System console log output level. |
+| `keep_intermediates`| `--keep-intermediates`| `bool` | `false` | `true`, `false` | Whether to retain temporary intermediate files after a run. |
+| `output_dir` | `--output-dir` | `string` | `output` | - | Root directory for output generation. |
+| `temp_dir` | `--temp-dir` | `string` | `temp` | - | Root directory for temporary file storage. |
+| `pdb2pqr_force_field`| `--pdb2pqr-force-field`| `string` | `SWANSON` | `AMBER`, `CHARMM`, `PARSE`, `TYL06`, `PEOEPB`, `SWANSON` | Force field standard used for `pdb2pqr`. |
+| `pqr_radius_scale` | `--pqr-radius-scale` | `float` | `1.2` | - | Cavity radius scaling factor used in ORCA input generation. |
+| `orca_functional` | `--orca-functional` | `string` | `B3LYP` | - | Density Functional (DFT) chosen for ORCA. |
+| `orca_basis_set` | `--orca-basis-set` | `string` | `6-31G*` | - | Basis set chosen for ORCA calculations. |
+| `orca_nprocs` | `--orca-nprocs` | `int` | `32` | - | Number of processors for ORCA (`%pal nprocs`). |
+| `orca_maxcore` | `--orca-maxcore` | `int` | `7000` | - | Maximum memory per core for ORCA in MB (`%maxcore`). |
+| `eps_gaussian_exponent`| `--eps-gaussian-exponent`| `float` | `5.0` | - | EPS density exponent (Only effective when `surface_mode=eps`). |
+| `eps_target_iso_level` | `--eps-target-iso-level` | `float` | `0.999` | - | EPS target isovalue (Only effective when `surface_mode=eps`). |
 
-## CLI Reference
+---
 
-These arguments can be directly passed to `pipeline_orchestrator.py` to override any configuration setting:
+### Runtime-Only CLI Arguments
 
-- `--config FILE`
-- `--parallel`
-- `--max-workers N`
-- `--output-dir DIR`
-- `--temp-dir DIR`
-- `--keep-intermediates`
-- `--surface-mode {vdw,ses,eps}`
-- `--sample-points INT`
-- `--grid-spacing FLOAT`
-- `--log-level {DEBUG,INFO,WARNING,ERROR}`
-- `--multiwfn-path PATH`
-- `--orca-bin-path PATH`
-- `--pdb2pqr-force-field {AMBER,CHARMM,PARSE,TYL06,PEOEPB,SWANSON}`
-- `--pqr-radius-scale FLOAT`
-- `--orca-functional STR`
-- `--orca-basis-set STR`
-- `--orca-nprocs INT`
-- `--orca-maxcore INT`
-- `--eps-gaussian-exponent FLOAT`
-- `--eps-target-iso-level FLOAT`
-- `--register-orca-bin-path PATH`
-- `--register-multiwfn-path PATH`
+These arguments are used to control the orchestration behavior or register environment paths and are not typically stored in static configuration files:
+
+* **Execution Control:**
+    * `--config FILE`: Path to the configuration file to be loaded.
+    * `--parallel`: Enable parallel processing for multiple tasks.
+    * `--max-workers N`: Specify the maximum number of concurrent workers.
+* **Environment Registration:**
+    * `--register-orca-bin-path PATH`: Register and persist the ORCA executable path.
+    * `--register-multiwfn-path PATH`: Register and persist the Multiwfn executable path.
 
 ## Output Structure
 
