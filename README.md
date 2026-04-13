@@ -1,5 +1,6 @@
 # QMSEP (v1.0.0)
-<img width="684" height="258" alt="image" src="https://github.com/user-attachments/assets/af98dac7-4f23-40af-8230-88eed7f3e557" />
+<img width="1024" height="387" alt="image" src="https://github.com/user-attachments/assets/38a17a6a-f193-4d9c-bae9-308e636954d0" />
+
 
 Quantum Mechanics Surface Electrostatic Potential (QMSEP) workflow for dielectric-charge calculations.
 
