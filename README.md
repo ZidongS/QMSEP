@@ -31,7 +31,8 @@
 
 **QMSEP** automates the workflow for calculating dielectric charges through surface electrostatic potentials. The automated pipeline includes:
 
-1. **PDB to PQR preprocessing** 2. **ORCA gas and solvated electronic structure calculations**
+1. **PDB to PQR preprocessing**
+2. **ORCA gas and solvated electronic structure calculations**
 3. **Reacting charge extraction**
 4. **Surface point sampling** (`vdw`, `ses`, `eps`)
 5. **Multiwfn electrostatic potential labeling**
