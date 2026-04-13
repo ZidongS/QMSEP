@@ -1,0 +1,12 @@
+优化这个项目，至少实现以下改进：
+1.检查指定config运行的功能python pipeline_orchestrator.py 2RVD --config custom_config.json，目前这个功能似乎有问题，部分参数不会按照config文件中的定义指定
+2.运行日志应当也储存在output文件夹中以PDBid命名的子文件夹中，且内容应当更加丰富（包括运行具体参数配置及每个参数的简要介绍、Step times中对于每一个步骤在干什么的简要介绍、任务的起始时间）
+3.新增可指定参数控制/mnt/sda2/szd/Tong_lab/dieletric_charge/production_pipline_v4/steps/data_preprocessing.py中的Run pdb2pqr模块的"--ff", "SWANSON",部分，可选选项有['AMBER', 'CHARMM', 'PARSE', 'TYL06', 'PEOEPB', 'SWANSON']
+4.新增可指定参数控制data_preprocessing的_generate_orca_inputs函数中的 radius = float(parts[-2])*1.2所乘的系数（对应orca隐式溶剂cavity的大小），默认为1.2
+5.新增可指定参数控制data_preprocessing的_generate_orca_inputs函数中的# Gas phase input的 f.write("! B3LYP 6-31G*\n%pal\nnprocs 32\nend\n%maxcore 7000\n")部分和# Solvated phase input的f.write("! B3LYP 6-31G* CPCM(water)\n%pal\nnprocs 32\nend\n%maxcore 7000\n")部分，用户可自定义泛函（默认B3LYP）、基组（默认6-31G*）、CPU核心数（默认32）、单个cpu最大内存（默认7000）
+6.新增可指定参数控制point_sampler的_generate_eps_points函数的gaussian_exponent = 5.0和target_iso_level = 0.999参数（仅当模式为ses时生效）
+7.提供方便用户便捷一次性接入Multiwfn和orca启动地址的入口并在README中介绍清楚
+8.程序启动时在命令行打印专业可爱有创意的程序图标（QMSEP）并列举作者（Zidong Shu），版本v1.0.0时间2026，同时强调程序遵循MIT证书。随后引用和致谢orca（Neese, F. (2012). The ORCA program system. WIREs Computational Molecular Science, 2(1), 73–78. DOI: 10.1002/wcms.81）和Multiwfn（• Tian Lu, Feiwu Chen, Multiwfn: A Multifunctional Wavefunction Analyzer, J. Comput. Chem. 33, 580-592 (2012) DOI: 10.1002/jcc.22885；Tian Lu, A comprehensive electron wavefunction analysis toolbox for chemists, Multiwfn, J. Chem. Phys., 161, 082503 (2024) DOI: 10.1063/5.0216272）
+9.将README写得全面专业，提供依赖下载指令列表，同时提供一个env.yaml供用户一键安装环境
+10.代码中的全部注释使用英文，每个文件最开头都应当有注释表明这个文件的功能
+11.其他你认为可以让这个项目更完整的地方

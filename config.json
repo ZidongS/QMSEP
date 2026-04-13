@@ -1,0 +1,60 @@
+{
+  "_comment": "User-friendly config with JSON key comments. Keep unknown _comment_* keys as documentation.",
+
+  "_comment_multiwfn_path": "Path to Multiwfn executable. Default: env QMSEP_MULTIWFN_PATH or built-in value.",
+  "multiwfn_path": "/mnt/sda2/szd/Multiwfn_3.8_dev_bin_Linux_noGUI/Multiwfn_noGUI",
+
+  "_comment_orca_bin_path": "Path to ORCA binary executable. Default: env QMSEP_ORCA_BIN_PATH or 'orca' from PATH.",
+  "orca_bin_path": "orca",
+
+  "_comment_max_retries": "Maximum retries for failed ORCA jobs. Default: 1.",
+  "max_retries": 1,
+
+  "_comment_retry_delay": "Delay between retries in seconds. Default: 5.",
+  "retry_delay": 5,
+
+  "_comment_surface_mode": "Surface mode. Options: vdw | ses | eps. Default: ses.",
+  "surface_mode": "ses",
+
+  "_comment_sample_points": "Number of output sampling points. Default: 10000.",
+  "sample_points": 10000,
+
+  "_comment_grid_spacing": "Grid spacing in angstrom used in field construction. Default: 0.1.",
+  "grid_spacing": 0.1,
+
+  "_comment_log_level": "Logging level. Options: DEBUG | INFO | WARNING | ERROR. Default: INFO.",
+  "log_level": "INFO",
+
+  "_comment_keep_intermediates": "Keep intermediate files instead of auto-cleanup. Default: false.",
+  "keep_intermediates": false,
+
+  "_comment_output_dir": "Output root directory. Default: output.",
+  "output_dir": "output",
+
+  "_comment_temp_dir": "Temporary working directory root. Default: temp.",
+  "temp_dir": "work_temp",
+
+  "_comment_pdb2pqr_force_field": "pdb2pqr force field. Options: AMBER | CHARMM | PARSE | TYL06 | PEOEPB | SWANSON. Default: SWANSON.",
+  "pdb2pqr_force_field": "SWANSON",
+
+  "_comment_pqr_radius_scale": "Radius scale factor for ORCA CPCM cavity. Default: 1.2.",
+  "pqr_radius_scale": 1.2,
+
+  "_comment_orca_functional": "ORCA DFT functional keyword. Default: B3LYP.",
+  "orca_functional": "B3LYP",
+
+  "_comment_orca_basis_set": "ORCA basis set keyword. Default: 6-31G*.",
+  "orca_basis_set": "6-31G*",
+
+  "_comment_orca_nprocs": "ORCA CPU cores in %pal nprocs. Default: 32.",
+  "orca_nprocs": 32,
+
+  "_comment_orca_maxcore": "ORCA max memory per core in MB. Default: 7000.",
+  "orca_maxcore": 7000,
+
+  "_comment_eps_gaussian_exponent": "EPS gaussian exponent for rho_mol model (effective in eps mode). Default: 5.0.",
+  "eps_gaussian_exponent": 5.0,
+
+  "_comment_eps_target_iso_level": "EPS target isosurface value (effective in eps mode). Default: 0.999.",
+  "eps_target_iso_level": 0.999
+}

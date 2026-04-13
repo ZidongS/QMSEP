@@ -1,0 +1,11 @@
+2026-04-13 21:17:35 [INFO] Starting pipeline for PDB ID: 2RVD
+2026-04-13 21:17:35 [INFO] Created temporary directory: work_temp/temp_2RVD
+2026-04-13 21:17:35 [INFO] Step 1/5 - Data preprocessing for 2RVD
+2026-04-13 21:17:36 [INFO] Successfully generated PQR file: work_temp/temp_2RVD/2RVD.pqr
+2026-04-13 21:17:36 [INFO] Cleaned PQR file, found 166 atoms, total charge -2.00
+2026-04-13 21:17:36 [INFO] Generated ORCA input files
+2026-04-13 21:17:36 [INFO] [92mStep 1 completed in 1.12s[0m
+2026-04-13 21:17:36 [INFO] Step 2/5 - Running ORCA calculations for 2RVD
+2026-04-13 21:17:36 [INFO] Running ORCA gas calculation for 2RVD
+2026-04-13 21:17:36 [INFO] ORCA binary path: orca
+2026-04-13 21:17:36 [INFO] Attempt 1/2: Running ORCA gas
