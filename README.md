@@ -1,218 +1,171 @@
-# QMSEP (v1.0.0)
-<img width="1024" height="387" alt="image" src="https://github.com/user-attachments/assets/58ddfb3b-2af7-4946-9c81-b28e7e526722" />
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/58ddfb3b-2af7-4946-9c81-b28e7e526722" alt="QMSEP Logo" width="500">
 
+  <h1>QMSEP (v1.0.0)</h1>
 
+  <p><b>Quantum Mechanics Surface Electrostatic Potential (QMSEP) workflow for dielectric-charge calculations.</b></p>
 
-Quantum Mechanics Surface Electrostatic Potential (QMSEP) workflow for dielectric-charge calculations.
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.x-blue.svg" alt="Python 3.x"></a>
+  </p>
+</div>
 
-Author: Zidong Shu  
-License: MIT
+---
 
-## 1) What QMSEP does
+## Table of Contents
+- [Overview](#overview)
+- [Installation](#installation)
+- [Setup & Registration](#setup--registration)
+- [Preflight Check](#preflight-check)
+- [Quick Start](#quick-start)
+- [Configuration Precedence](#configuration-precedence)
+- [Configuration Parameters](#configuration-parameters)
+- [CLI Reference](#cli-reference)
+- [Output Structure](#output-structure)
+- [Citations & Acknowledgements](#citations--acknowledgements)
 
-QMSEP automates:
-1. PDB to PQR preprocessing
-2. ORCA gas and solvated electronic structure calculations
-3. Reacting charge extraction
-4. Surface point sampling (`vdw`, `ses`, `eps`)
-5. Multiwfn electrostatic potential labeling
+---
 
-## 2) Install dependencies
+## Overview
 
-### Python environment
+**QMSEP** automates the workflow for calculating dielectric charges through surface electrostatic potentials. The automated pipeline includes:
 
-Use Conda (recommended):
+1. **PDB to PQR preprocessing** 2. **ORCA gas and solvated electronic structure calculations**
+3. **Reacting charge extraction**
+4. **Surface point sampling** (`vdw`, `ses`, `eps`)
+5. **Multiwfn electrostatic potential labeling**
+
+## Installation
+
+### Python Environment
+
+It is highly recommended to use Conda for environment management:
+
 ```bash
 conda env create -f env.yaml
 conda activate qmsep
 ```
 
-Or pip:
+Alternatively, you can install dependencies via `pip`:
+
 ```bash
 pip install numpy scipy scikit-image pdb2pqr
 ```
 
-### External tools (install these first)
+### External Tools
 
-- `ORCA` binary executable (must be callable from terminal)
-- `Multiwfn` executable
-- `pdb2pqr`
+You must install the following external tools before running QMSEP:
 
-Tip:
-- If ORCA is in PATH, set `"orca_bin_path": "orca"`.
-- Otherwise use full absolute path, such as `/opt/orca/orca`.
+- **ORCA**: Binary executable must be callable from the terminal.
+- **Multiwfn**: Standalone executable.
+- **pdb2pqr**: Provided via the Python environment installation.
 
-## 3) Register ORCA and Multiwfn once
+> **💡 Tip:**
+> - If ORCA is already added to your system's `PATH`, you can simply set `"orca_bin_path": "orca"`.
+> - Otherwise, you must provide the full absolute path (e.g., `/opt/orca/orca`).
 
-If users do not want `--config`, register paths from command line:
+## Setup & Registration
+
+If you prefer not to pass the `--config` flag every time, you can register the paths to your external tools globally from the command line:
 
 ```bash
 python pipeline_orchestrator.py --register-orca-bin-path "/path/to/orca"
 python pipeline_orchestrator.py --register-multiwfn-path "/path/to/Multiwfn_noGUI"
 ```
 
-These values are saved in `~/.qmsep_cli_config.json` and reused automatically.
+These values are saved securely in `~/.qmsep_cli_config.json` and will be reused automatically in future runs.
 
-You can also set environment variables:
+Alternatively, you can use environment variables:
+
 ```bash
 export QMSEP_ORCA_BIN_PATH="/path/to/orca"
 export QMSEP_MULTIWFN_PATH="/path/to/Multiwfn_noGUI"
 ```
 
-## 4) Recommended preflight (before quick start)
+## Preflight Check
 
-Run:
+Before running your first actual calculation, it is highly recommended to perform a preflight check to ensure your environment is configured correctly:
+
 ```bash
 python qmsep_preflight.py
 ```
 
-Or with custom config:
+Or, if you are using a custom configuration file:
+
 ```bash
 python qmsep_preflight.py custom_config.json
 ```
 
-Checks include:
+**The preflight sequence verifies:**
 1. Project structure integrity
-2. Python dependencies
-3. Config parse and required keys
+2. Python dependencies availability
+3. Configuration parsing and required keys
 4. ORCA binary accessibility
-5. Multiwfn accessibility
+5. Multiwfn executable accessibility
 
-Legacy alias:
-```bash
-python test_pipeline.py
-```
+> **Note:** `python test_pipeline.py` is preserved as a legacy alias for this command.
 
-## 5) Quick start
+## Quick Start
 
-Single PDB:
+**Single PDB processing:**
 ```bash
 python pipeline_orchestrator.py 2RVD
 ```
 
-Multiple PDB:
+**Multiple PDB processing (Parallel):**
 ```bash
 python pipeline_orchestrator.py 2RVD 2JOF 7SOH --parallel --max-workers 4
 ```
 
-Custom config:
+**Using a custom JSON configuration:**
 ```bash
 python pipeline_orchestrator.py 2RVD --config custom_config.json
 ```
 
-## 6) Configuration precedence
+## Configuration Precedence
 
-Priority from low to high:
-1. Built-in defaults
+QMSEP resolves configuration parameters using the following priority hierarchy (from lowest to highest):
+
+1. **Built-in defaults** (Lowest)
 2. Project `config.json`
 3. User registration file `~/.qmsep_cli_config.json`
-4. `--config` file
-5. CLI explicit arguments
+4. `--config` file passed at runtime
+5. **CLI explicit arguments** (Highest)
 
-## 7) Full config parameter reference
+## Configuration Parameters
 
-- `multiwfn_path`  
-  - Type: `string`  
-  - Default: env `QMSEP_MULTIWFN_PATH` or built-in path  
-  - Meaning: path to Multiwfn executable
+The complete list of supported parameters for configuration files:
 
-- `orca_bin_path`  
-  - Type: `string`  
-  - Default: env `QMSEP_ORCA_BIN_PATH` or `orca`  
-  - Meaning: path to ORCA executable
+| Parameter | Type | Default | Options / Valid Values | Description |
+| :--- | :---: | :---: | :--- | :--- |
+| `multiwfn_path` | `string` | `$QMSEP_MULTIWFN_PATH` | - | Path to the Multiwfn executable. |
+| `orca_bin_path` | `string` | `orca` | - | Path to the ORCA executable (or `$QMSEP_ORCA_BIN_PATH`). |
+| `max_retries` | `int` | `1` | - | Number of ORCA execution retry attempts. |
+| `retry_delay` | `int` | `5` | - | Sleep time (in seconds) between retry attempts. |
+| `surface_mode` | `string` | `ses` | `vdw`, `ses`, `eps` | Method used for surface generation. |
+| `sample_points` | `int` | `10000` | - | Target number of sampled surface points. |
+| `grid_spacing` | `float` | `0.1` | - | Grid spacing dimension in Angstroms. |
+| `log_level` | `string` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` | System console log output level. |
+| `keep_intermediates`| `bool` | `false` | `true`, `false` | Whether to retain temporary intermediate files after a run. |
+| `output_dir` | `string` | `output` | - | Root directory for output generation. |
+| `temp_dir` | `string` | `temp` | - | Root directory for temporary file storage. |
+| `pdb2pqr_force_field`| `string` | `SWANSON` | `AMBER`, `CHARMM`, `PARSE`, `TYL06`, `PEOEPB`, `SWANSON` | Force field standard used for `pdb2pqr`. |
+| `pqr_radius_scale` | `float` | `1.2` | - | Cavity radius scaling factor used in ORCA input generation. |
+| `orca_functional` | `string` | `B3LYP` | - | Density Functional (DFT) chosen for ORCA. |
+| `orca_basis_set` | `string` | `6-31G*` | - | Basis set chosen for ORCA calculations. |
+| `orca_nprocs` | `int` | `32` | - | Number of processors for ORCA (`%pal nprocs`). |
+| `orca_maxcore` | `int` | `7000` | - | Maximum memory per core for ORCA in MB (`%maxcore`). |
+| `eps_gaussian_exponent`| `float` | `5.0` | - | EPS density exponent (Only effective when `surface_mode=eps`). |
+| `eps_target_iso_level` | `float` | `0.999` | - | EPS target isovalue (Only effective when `surface_mode=eps`). |
 
-- `max_retries`  
-  - Type: `int`  
-  - Default: `1`  
-  - Meaning: ORCA retry attempts
+## CLI Reference
 
-- `retry_delay`  
-  - Type: `int` (seconds)  
-  - Default: `5`  
-  - Meaning: sleep time between retries
-
-- `surface_mode`  
-  - Type: `string`  
-  - Options: `vdw`, `ses`, `eps`  
-  - Default: `ses`  
-  - Meaning: surface generation mode
-
-- `sample_points`  
-  - Type: `int`  
-  - Default: `10000`  
-  - Meaning: number of sampled surface points
-
-- `grid_spacing`  
-  - Type: `float`  
-  - Default: `0.1`  
-  - Meaning: grid spacing in angstrom
-
-- `log_level`  
-  - Type: `string`  
-  - Options: `DEBUG`, `INFO`, `WARNING`, `ERROR`  
-  - Default: `INFO`  
-  - Meaning: runtime log level
-
-- `keep_intermediates`  
-  - Type: `bool`  
-  - Default: `false`  
-  - Meaning: keep temp files if true
-
-- `output_dir`  
-  - Type: `string`  
-  - Default: `output`  
-  - Meaning: output root directory
-
-- `temp_dir`  
-  - Type: `string`  
-  - Default: `temp`  
-  - Meaning: temp root directory
-
-- `pdb2pqr_force_field`  
-  - Type: `string`  
-  - Options: `AMBER`, `CHARMM`, `PARSE`, `TYL06`, `PEOEPB`, `SWANSON`  
-  - Default: `SWANSON`  
-  - Meaning: force field for `pdb2pqr`
-
-- `pqr_radius_scale`  
-  - Type: `float`  
-  - Default: `1.2`  
-  - Meaning: cavity radius scaling in ORCA input generation
-
-- `orca_functional`  
-  - Type: `string`  
-  - Default: `B3LYP`  
-  - Meaning: ORCA DFT functional
-
-- `orca_basis_set`  
-  - Type: `string`  
-  - Default: `6-31G*`  
-  - Meaning: ORCA basis set
-
-- `orca_nprocs`  
-  - Type: `int`  
-  - Default: `32`  
-  - Meaning: ORCA `%pal nprocs`
-
-- `orca_maxcore`  
-  - Type: `int`  
-  - Default: `7000`  
-  - Meaning: ORCA `%maxcore` (MB/core)
-
-- `eps_gaussian_exponent`  
-  - Type: `float`  
-  - Default: `5.0`  
-  - Meaning: EPS density exponent (effective when `surface_mode=eps`)
-
-- `eps_target_iso_level`  
-  - Type: `float`  
-  - Default: `0.999`  
-  - Meaning: EPS target isovalue (effective when `surface_mode=eps`)
-
-## 8) Main CLI options
+These arguments can be directly passed to `pipeline_orchestrator.py` to override any configuration setting:
 
 - `--config FILE`
-- `--parallel --max-workers N`
+- `--parallel`
+- `--max-workers N`
 - `--output-dir DIR`
 - `--temp-dir DIR`
 - `--keep-intermediates`
@@ -233,15 +186,23 @@ Priority from low to high:
 - `--register-orca-bin-path PATH`
 - `--register-multiwfn-path PATH`
 
-## 9) Output
+## Output Structure
 
-- `output/pipeline_report_*.txt`: global run report
-- `output/<PDB_ID>/pipeline.log`: per-PDB runtime log
-- `output/<PDB_ID>/run_context.txt`: effective params and step context
-- generated calculation outputs (PQR/ORCA/Multiwfn related files)
+Upon completion, QMSEP generates the following organized structure in your specified output directory:
 
-## 10) Citation and acknowledgement
+```text
+output/
+├── pipeline_report_*.txt          # Global execution report across all PDBs
+├── <PDB_ID>/
+│   ├── pipeline.log               # Detailed runtime log specific to this PDB
+│   ├── run_context.txt            # Effective parameters and step context
+│   └── (Generated Outputs)        # Specific PQR, ORCA, and Multiwfn related files
+```
 
-- ORCA: Neese, F. (2012). *WIREs Computational Molecular Science*, 2(1), 73-78. DOI: 10.1002/wcms.81
-- Multiwfn: Tian Lu, Feiwu Chen, *J. Comput. Chem.* 33, 580-592 (2012). DOI: 10.1002/jcc.22885
-- Multiwfn: Tian Lu, *J. Chem. Phys.* 161, 082503 (2024). DOI: 10.1063/5.0216272
+## Citations & Acknowledgements
+
+If you use this software in your research, please consider citing the underlying tools:
+
+- **ORCA:** Neese, F. (2012). *WIREs Computational Molecular Science*, 2(1), 73-78. [DOI: 10.1002/wcms.81](https://doi.org/10.1002/wcms.81)
+- **Multiwfn (Original):** Tian Lu, Feiwu Chen, *J. Comput. Chem.* 33, 580-592 (2012). [DOI: 10.1002/jcc.22885](https://doi.org/10.1002/jcc.22885)
+- **Multiwfn (Updates):** Tian Lu, *J. Chem. Phys.* 161, 082503 (2024). [DOI: 10.1063/5.0216272](https://doi.org/10.1063/5.0216272)
