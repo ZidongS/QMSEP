@@ -141,7 +141,7 @@ python pipeline_orchestrator.py 2RVD 2JOF 7SOH --parallel --max-workers 4
 
 **Using a custom JSON configuration:**
 ```bash
-python pipeline_orchestrator.py 2RVD --config custom_config.json
+python pipeline_orchestrator.py 2RVD --config config.json
 ```
 
 ## Configuration Precedence
