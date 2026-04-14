@@ -60,9 +60,29 @@ pip install numpy scipy scikit-image pdb2pqr
 You must install the following external tools before running QMSEP:
 
 - **ORCA**: ORCA is a powerful, modern quantum chemistry software package. QMSEP use ORCA to calculate wavefunction of molecular of interest.
-  You can download ORCA here [ORCA Download](https://www.faccts.de/customer "ORCA Download")                                                       
+
+You can download ORCA here [ORCA Download](https://www.faccts.de/customer "ORCA Download")
+```bash
+#quick download command for linux user
+cd QMSEP
+mkdir -p ./orca_install
+cd ./orca_install
+# download and save orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg.tar.xz
+conda install -c conda-forge openmpi=4.1 libstdcxx-ng -y
+tar -xJf orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg.tar.xz
+rm orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg.tar.xz
+```                                          
 - **Multiwfn**: Multiwfn is a powerful program for realizing electronic wavefunction analysis. QMSEP use Multiwfn to analysis wavefunction and calculate potential.
-  You can download Multiwfn here [Multiwfn Download](http://sobereva.com/multiwfn/ "Multiwfn Download")  
+You can download Multiwfn here [Multiwfn Download](http://sobereva.com/multiwfn/ "Multiwfn Download")
+ ```bash
+#quick download command for linux user
+cd QMSEP
+mkdir -p ./multiwfn_install
+cd ./multiwfn_install
+wget http://sobereva.com/multiwfn/misc/Multiwfn_2026.4.10_bin_Linux_noGUI.zip
+unzip Multiwfn_2026.4.10_bin_Linux_noGUI.zip
+rm Multiwfn_2026.4.10_bin_Linux_noGUI.zip
+``` 
 - **pdb2pqr**: Provided via the Python environment installation.
 
 > **💡 Tip:**
