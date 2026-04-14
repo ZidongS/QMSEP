@@ -25,7 +25,7 @@ from steps.point_sampler import PointSampler
 from steps.potential_calculator import PotentialCalculator
 
 LOCAL_CLI_CONFIG = os.path.expanduser("~/.qmsep_cli_config.json")
-
+os.environ["OMP_STACKSIZE"] = "200M"
 
 class PipelineOrchestrator:
     """Main orchestrator for the dielectric charge calculation pipeline"""
@@ -228,7 +228,7 @@ def build_default_config() -> Dict:
         "sample_points": 10000,
         "grid_spacing": 0.1,
         "log_level": "INFO",
-        "multiwfn_path": os.environ.get("QMSEP_MULTIWFN_PATH", "/mnt/sda2/szd/Multiwfn_3.8_dev_bin_Linux_noGUI/Multiwfn_noGUI"),
+        "multiwfn_path": os.environ.get("QMSEP_MULTIWFN_PATH", "Multiwfn_noGUI"),
         "orca_bin_path": os.environ.get("QMSEP_ORCA_BIN_PATH", "orca"),
         "max_retries": 1,
         "retry_delay": 5,
