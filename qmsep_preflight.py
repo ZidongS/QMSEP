@@ -30,8 +30,8 @@ def print_qmsep_banner():
         fr"{C.GREEN}  .   {C.BLUE}\ | /{C.GREEN}   .   {C.CYAN}| |  | || \  / | (___  | |__   | |__) |{C.RESET}",
         fr"{C.GREEN} -   {C.BLUE}-- {C.MAGENTA}{C.BOLD}Ψ{C.RESET}{C.BLUE} --{C.GREEN}   -  {C.CYAN}| |  | || |\/| |\___ \ |  __|  |  ___/ {C.RESET}",
         fr"{C.GREEN}  .   {C.BLUE}/ | \{C.GREEN}   .   {C.CYAN}| |__| || |  | |____) || |____ | |     {C.RESET}",
-        fr"{C.GREEN}    .       .      {C.CYAN}\___\_\|_|  |_|_____/ |______||_|     {C.RESET}",
-        fr"{C.GREEN}      ' : '                                              {C.RESET}"
+        fr"{C.GREEN}      .       .      {C.CYAN}\___\_\|_|  |_|_____/ |______||_|     {C.RESET}",
+        fr"{C.GREEN}        ' : '                                              {C.RESET}"
     ]
 
     info = [
@@ -80,6 +80,7 @@ def print_qmsep_banner():
     print(f"{C.BLUE}╚{'═' * width}╝{C.RESET}")
     print()
 
+
 def load_json_or_jsonc(path: str) -> Dict:
     """Load JSON or JSONC file by stripping comments before parsing."""
     with open(path, "r", encoding="utf-8") as f:
@@ -87,6 +88,22 @@ def load_json_or_jsonc(path: str) -> Dict:
     without_block = re.sub(r"/\*.*?\*/", "", content, flags=re.DOTALL)
     without_line = re.sub(r"^\s*//.*$", "", without_block, flags=re.MULTILINE)
     return json.loads(without_line)
+
+
+def get_active_config(config_path: str) -> Dict:
+    """Load local config and merge with global CLI config if available."""
+    config = load_json_or_jsonc(config_path)
+    
+    cli_config_path = os.path.expanduser("~/.qmsep_cli_config.json")
+    if os.path.exists(cli_config_path):
+        try:
+            cli_config = load_json_or_jsonc(cli_config_path)
+            # Update local config with registered global paths (CLI takes precedence)
+            config.update(cli_config)
+        except Exception:
+            pass
+            
+    return config
 
 
 def check_required_files() -> Tuple[bool, str]:
@@ -122,7 +139,7 @@ def check_python_imports() -> Tuple[bool, str]:
 def check_config_validity(config_path: str) -> Tuple[bool, str]:
     """Check config file can be parsed and has critical keys."""
     try:
-        config = load_json_or_jsonc(config_path)
+        config = get_active_config(config_path)
     except Exception as exc:
         return False, f"Config parsing failed: {exc}"
 
@@ -135,7 +152,7 @@ def check_config_validity(config_path: str) -> Tuple[bool, str]:
 
 def check_orca_connection(config_path: str) -> Tuple[bool, str]:
     """Check ORCA binary connectivity."""
-    config = load_json_or_jsonc(config_path)
+    config = get_active_config(config_path)
     orca_bin_path = config.get("orca_bin_path", "orca")
     resolved_orca = shutil.which(orca_bin_path) if not os.path.isabs(orca_bin_path) else orca_bin_path
     if not resolved_orca or not os.path.exists(resolved_orca):
@@ -146,36 +163,61 @@ def check_orca_connection(config_path: str) -> Tuple[bool, str]:
 
 
 def check_multiwfn_connection(config_path: str) -> Tuple[bool, str]:
-    """Check Multiwfn executable path and startup accessibility."""
-    config = load_json_or_jsonc(config_path)
+    """
+    Check if the Multiwfn executable is accessible and functional.
+    This version bypasses return code issues by identifying the program header.
+    """
+    # Retrieve configuration (assuming get_active_config is defined in your scope)
+    config = get_active_config(config_path)
     multiwfn_path = config.get("multiwfn_path", "")
+
+    # Basic file system check
     if not os.path.exists(multiwfn_path):
-        return False, f"Multiwfn executable not found: {multiwfn_path}"
-    if not os.access(multiwfn_path, os.X_OK):
-        return False, f"Multiwfn exists but is not executable: {multiwfn_path}"
+        return False, f"Multiwfn executable not found at: {multiwfn_path}"
 
     try:
-        result = subprocess.run([multiwfn_path], input="q\n", capture_output=True, text=True, timeout=8)
-    except subprocess.TimeoutExpired:
-        return True, "Multiwfn launches (interactive prompt timeout is acceptable)."
-    except Exception as exc:
-        return False, f"Failed to launch Multiwfn: {exc}"
+        # Launch Multiwfn and send a newline '\n' to trigger the initial header print.
+        # We capture both stdout and stderr because warnings often go to stderr.
+        result = subprocess.run(
+            [multiwfn_path],
+            input="\n",
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        # Combine output streams to ensure we catch the header regardless of redirection
+        output = result.stdout + result.stderr
 
-    if result.returncode in (0, 1):
-        return True, "Multiwfn executable is reachable."
-    return False, f"Multiwfn returned unexpected code: {result.returncode}"
+        # The most reliable way to verify is checking for the program name in the output.
+        # This succeeds even if Multiwfn exits with an error code due to missing settings.ini.
+        if "Multiwfn -- A Multifunctional Wavefunction Analyzer" in output:
+            return True, "Multiwfn connection verified successfully."
+            
+    except subprocess.TimeoutExpired as e:
+        # If the process hangs, check if the header was already captured in the buffer
+        partial_output = e.stdout.decode() if e.stdout else ""
+        if "Multiwfn" in partial_output:
+            return True, "Multiwfn is functional (verified via timeout buffer)."
+        return False, "Multiwfn failed to respond within the timeout period."
+        
+    except Exception as exc:
+        return False, f"Unexpected error during launch: {str(exc)}"
+
+    return False, "Multiwfn started but failed to provide a valid identity header."
 
 
 def print_tool_setup_help():
     """Print quick setup help when ORCA/Multiwfn checks fail."""
     print("Quick setup guidance:")
-    print("  1) Set orca_bin_path in config.json")
-    print("  2) Set multiwfn_path in config.json")
+    print("  1) Set orca_bin_path/multiwfn_path in config.json")
+    print("  2) Or register via CLI (saves to ~/.qmsep_cli_config.json):")
+    print("     python pipeline_orchestrator.py --register-orca-bin-path <path>")
     print("  3) Optional environment variables:")
     print('     export QMSEP_ORCA_BIN_PATH="/path/to/orca"')
     print('     export QMSEP_MULTIWFN_PATH="/path/to/Multiwfn_noGUI"')
-
-
+    print("  4) Add execute permissions:")
+    print('     chmod +x /path/to/Multiwfn_noGUI')
 def run_checks(config_path: str) -> int:
     """Run all checks and print a professional preflight report."""
     checks: List[Tuple[str, str, callable]] = [
