@@ -3,7 +3,7 @@
 
   <h1>QMSEP (v1.0.0)</h1>
 
-  <p><b>Quantum Mechanics Surface Electrostatic Potential (QMSEP) workflow for dielectric-charge calculations.</b></p>
+  <p><b>Quantum Mechanics Surface Electrostatic Potential (QMSEP) workflow for next-level molecular surface potential calculations.</b></p>
 
   <p>
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
