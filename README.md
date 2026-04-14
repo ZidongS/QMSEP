@@ -84,7 +84,7 @@ You can download Multiwfn here [Multiwfn Download](http://sobereva.com/multiwfn/
 > **💡 Tip:**
 > - If ORCA is already added to your system's `PATH`, you can simply set `"orca_bin_path": "orca"`.
 > - Otherwise, you must provide the full absolute path (e.g., `/opt/orca/orca`).
-> - You also need to edit the settings.ini file in multiwfn folder and set orca_2mklpath.
+> - You also need to edit the settings.ini file in multiwfn folder and set `orca_2mklpath` and `nthreads`.
 
 ## Setup & Registration
 
