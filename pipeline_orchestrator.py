@@ -10,7 +10,7 @@ import argparse
 import concurrent.futures
 from datetime import datetime
 from typing import List, Dict
-
+import shutil
 # Add the current directory to Python path for importing modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,6 +32,7 @@ class PipelineOrchestrator:
     
     def __init__(self, config: Dict):
         self.config = config
+        self._auto_setup_environment()
         self.logger = PipelineLogger(config.get('log_level', 'INFO'))
         self.timer = Timer()
         self.file_manager = FileManager(config)
@@ -46,6 +47,22 @@ class PipelineOrchestrator:
         
         self.results = {}
         
+    def _auto_setup_environment(self):
+        orca_bin = self.config.get("orca_bin_path", "orca")
+        real_orca_path = shutil.which(orca_bin)
+        if real_orca_path:
+            orca_dir = os.path.dirname(os.path.abspath(real_orca_path))
+            conda_lib = os.path.join(os.environ.get("CONDA_PREFIX", ""), "lib")
+            extra_libs = [orca_dir, os.path.join(orca_dir, "lib")]
+            if os.path.exists(conda_lib):
+                extra_libs.append(conda_lib)
+            old_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
+            all_paths = extra_libs + ([old_ld_path] if old_ld_path else [])
+            os.environ["LD_LIBRARY_PATH"] = ":".join(all_paths)
+            old_path = os.environ.get("PATH", "")
+            if orca_dir not in old_path:
+                os.environ["PATH"] = f"{orca_dir}:{old_path}"
+
     def run_single_pdb(self, pdb_id: str) -> Dict:
         """Run the complete pipeline for a single PDB ID"""
         pdb_output_dir = self.file_manager.get_pdb_output_dir(pdb_id)
