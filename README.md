@@ -43,7 +43,8 @@
 It is highly recommended to use Conda for environment management:
 
 ```bash
-cd /path/to/QMSEP
+git clone https://github.com/ZidongS/QMSEP.git
+cd ./QMSEP
 conda env create -f env.yaml
 conda activate qmsep
 ```
